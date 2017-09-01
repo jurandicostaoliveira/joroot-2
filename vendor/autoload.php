@@ -9,8 +9,17 @@
  * @license     Free for study, development and contribution
  */
 
-define('VENDOR_DIR', __DIR__ . DIRECTORY_SEPARATOR);
-define('APP_DIR', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
+/**
+ * @param null | string $dirName
+ * @return string
+ */
+function forcePath($dirName = null)
+{
+    return realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $dirName) . DIRECTORY_SEPARATOR;
+}
+
+define('BASE_PATH', forcePath());
+define('VENDOR_PATH', forcePath('vendor'));
 
 /**
  * @param string $using
@@ -21,7 +30,6 @@ function autoload($using)
         $split = explode('\\', $using);
         $fileName = sprintf('%s.php', ucfirst(end($split)));
         array_pop($split);
-
         $path = '';
         $file = '';
 
@@ -30,10 +38,10 @@ function autoload($using)
         }
 
         $path .= $fileName;
-        if (file_exists(VENDOR_DIR . $path)) {
-            $file = VENDOR_DIR . $path;
-        } elseif (file_exists(APP_DIR . $path)) {
-            $file = APP_DIR . $path;
+        if (file_exists(VENDOR_PATH . $path)) {
+            $file = VENDOR_PATH . $path;
+        } elseif (file_exists(BASE_PATH . $path)) {
+            $file = BASE_PATH . $path;
         } else {
             throw new Exception(sprintf('The file %s was not found.', $path));
         }
@@ -53,11 +61,6 @@ function displayErrors($enable = false)
         ini_set('display_errors', 'On');
         error_reporting(E_ALL);
     }
-}
-
-function test($name)
-{
-    die($name);
 }
 
 spl_autoload_register('autoload');
