@@ -13,11 +13,6 @@ return [
     'defaultRoute' => 'home',
 
     /**
-     * Charset used in the project
-     */
-    'charset' => 'utf-8',
-
-    /**
      * Essential for date functions
      */
     'timezone' => 'America/Sao_Paulo',

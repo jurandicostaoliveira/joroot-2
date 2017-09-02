@@ -90,6 +90,15 @@ class Bootstrap extends Container
     }
 
     /**
+     * @param string $controller
+     * @return string
+     */
+    private function controllerPath($controller)
+    {
+        return sprintf('%sapp%scontrollers%s%s.php', BASE_PATH, DS, DS, $controller);
+    }
+
+    /**
      * @param $name
      * @return string
      * @throws \Exception
@@ -97,7 +106,7 @@ class Bootstrap extends Container
     private function controller($name)
     {
         $controller = sprintf('%sController', $this->camelize($name, true));
-        $file = sprintf('%sapp%scontrollers%s%s.php', BASE_PATH, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $controller);
+        $file = $this->controllerPath($controller);
         if (!file_exists($file)) {
             throw new \Exception(sprintf('File %s was not found.', $file));
         }
@@ -114,19 +123,73 @@ class Bootstrap extends Container
         return $this->camelize($name);
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    private function scope()
+    {
+        $scope = [
+            'host' => $this->projectHost(),
+            'controllerRoute' => $this->controllerRoute(),
+            'actionRoute' => $this->actionRoute(),
+            'parameters' => $this->parameters()
+        ];
+        $scope['controller'] = $this->controller($scope['controllerRoute']);
+        $scope['action'] = $this->action($scope['actionRoute']);
+
+        return $scope;
+    }
+
+    /**
+     * @param $scope
+     * @param $controllerPath
+     * @throws \Exception
+     */
+    private function dispatch($scope, $controllerPath)
+    {
+        if (!class_exists($scope['controller'])) {
+            throw new \Exception(
+                sprintf('The class %s was not found in the file %s', $scope['controller'], $controllerPath)
+            );
+        }
+
+        if (!method_exists($scope['controller'], $scope['action'])) {
+            throw new \Exception(
+                sprintf('The method %s was not found in the class %s', $scope['action'], $scope['controller'])
+            );
+        };
+
+        $controller = new $scope['controller']();
+        $controller->$scope['action']();
+    }
+
+    private function checkPhpVersion()
+    {
+        $phpVersion = (int)str_replace('.', '', substr(PHP_VERSION, 0, 3));
+        if ($phpVersion < parent::JOROOT_SUPORT_PHP_VERSION) {
+            throw new \Exception('Support only, for versions, equal to or greater than 5.6.0.');
+        }
+    }
+
     public function run()
     {
         try {
-            $scope = [
-                'host' => $this->projectHost(),
-                'controllerRoute' => $this->controllerRoute(),
-                'actionRoute' => $this->actionRoute(),
-                'parameters' => $this->parameters()
-            ];
-            $scope['controller'] = $this->controller($scope['controllerRoute']);
-            $scope['action'] = $this->action($scope['actionRoute']);
-            parent::add($scope);
+            $this->checkPhpVersion();
+            ob_start();
+            session_start();
 
+            if (isset($this->url['timezone']) && $this->url['timezone']) {
+                date_default_timezone_set($this->url['timezone']);
+            }
+
+            $scope = $this->scope();
+            $controllerPath = $this->controllerPath($scope['controller']);
+            require "{$controllerPath}";
+            parent::add($scope);
+            $this->dispatch($scope, $controllerPath);
+
+            ob_end_flush();
         } catch (\Exception $e) {
             parent::error($e->getMessage());
         }

@@ -8,6 +8,12 @@ namespace Joroot\Components;
  */
 class Container
 {
+
+    /**
+     * Suport version
+     */
+    const JOROOT_SUPORT_PHP_VERSION = 56;
+
     /**
      * @var array
      */

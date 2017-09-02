@@ -9,13 +9,15 @@
  * @license     Free for study, development and contribution
  */
 
+define('DS', DIRECTORY_SEPARATOR);
+
 /**
  * @param null | string $dirName
  * @return string
  */
 function forcePath($dirName = null)
 {
-    return realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $dirName) . DIRECTORY_SEPARATOR;
+    return realpath(__DIR__ . DS . '..' . DS . $dirName) . DS;
 }
 
 define('BASE_PATH', forcePath());
@@ -34,7 +36,7 @@ function autoload($using)
         $file = '';
 
         foreach ($split as $row) {
-            $path .= sprintf('%s%s', lcfirst($row), DIRECTORY_SEPARATOR);
+            $path .= sprintf('%s%s', lcfirst($row), DS);
         }
 
         $path .= $fileName;
