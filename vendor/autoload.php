@@ -63,4 +63,13 @@ function displayErrors($enable = false)
     }
 }
 
+/**
+ * @param mixed $data
+ */
+function printStop($data)
+{
+    print_r($data);
+    exit(0);
+}
+
 spl_autoload_register('autoload');

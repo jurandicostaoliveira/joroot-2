@@ -8,7 +8,7 @@ use Joroot\Components\Container;
  * Class HomeController
  * @package App\Controllers
  */
-class HomeController
+class HomeAgoController
 {
     /**
      * @param string $name

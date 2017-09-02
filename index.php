@@ -18,7 +18,10 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'a
 displayErrors(true);
 
 use Joroot\Components\Bootstrap;
+use App\Controllers\HomeController;
 
 $bootstrap = new Bootstrap();
-$bootstrap->setProjectDir('joroot-2/')->run();
+$bootstrap->run();
 
+$home = new HomeController();
+$home->test('Jurandi');
