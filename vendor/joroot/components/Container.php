@@ -32,7 +32,7 @@ class Container
      */
     public static function getConfig()
     {
-        $file = sprintf('%sapp%sconfig.php', BASE_PATH, DIRECTORY_SEPARATOR);
+        $file = sprintf('%sapp%sconfig.php', BASE_PATH, DS);
         if (!file_exists($file)) {
             self::error('File app/config.php not found.');
         }
@@ -56,6 +56,18 @@ class Container
     }
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    public static function getKey($key)
+    {
+        if (isset(self::$scope[$key])) {
+            return self::$scope[$key];
+        }
+        return false;
+    }
+
+    /**
      * @param null | string $message
      */
     public static function error($message = null)
@@ -65,7 +77,7 @@ class Container
             $message = $config['customErrorMessage'];
         }
 
-        $file = sprintf('%sjoroot%sviews%serror.phtml', VENDOR_PATH, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $file = sprintf('%sjoroot%sviews%serror.phtml', VENDOR_PATH, DS, DS);
         die(require "{$file}");
     }
 }

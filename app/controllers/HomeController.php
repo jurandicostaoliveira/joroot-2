@@ -10,12 +10,16 @@ use Joroot\Components\Container;
  */
 class HomeController
 {
-    /**
-     * @param string $name
-     */
-    public function test($name)
+
+    public function index()
     {
-        //echo 'HOME CONTROLLER -> ' . $name;
+        echo '<pre>';
         printStop(Container::getAll());
     }
+
+    public function createAll()
+    {
+        echo 'CREATE PRODUCTS ' . Container::getKey('action');
+    }
+
 }

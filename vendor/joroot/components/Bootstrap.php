@@ -50,6 +50,13 @@ class Bootstrap extends Container
         return ($toFirstUpper) ? ucfirst($str) : lcfirst($str);
     }
 
+    /**
+     * @return int
+     */
+    private function phpVersion()
+    {
+        return (int)str_replace('.', '', substr(PHP_VERSION, 0, 3));
+    }
 
     /**
      * @return string
@@ -90,15 +97,6 @@ class Bootstrap extends Container
     }
 
     /**
-     * @param string $controller
-     * @return string
-     */
-    private function controllerPath($controller)
-    {
-        return sprintf('%sapp%scontrollers%s%s.php', BASE_PATH, DS, DS, $controller);
-    }
-
-    /**
      * @param $name
      * @return string
      * @throws \Exception
@@ -106,7 +104,7 @@ class Bootstrap extends Container
     private function controller($name)
     {
         $controller = sprintf('%sController', $this->camelize($name, true));
-        $file = $this->controllerPath($controller);
+        $file = sprintf('%sapp%scontrollers%s%s.php', BASE_PATH, DS, DS, $controller);
         if (!file_exists($file)) {
             throw new \Exception(sprintf('File %s was not found.', $file));
         }
@@ -142,40 +140,36 @@ class Bootstrap extends Container
     }
 
     /**
-     * @param $scope
-     * @param $controllerPath
+     * @param array $scope
      * @throws \Exception
      */
-    private function dispatch($scope, $controllerPath)
+    private function dispatch($scope)
     {
-        if (!class_exists($scope['controller'])) {
+        $strController = 'App\\Controllers\\' . $scope['controller'];
+        $controller = new $strController();
+        $method = $scope['action'];
+
+        if (!class_exists($strController)) {
             throw new \Exception(
-                sprintf('The class %s was not found in the file %s', $scope['controller'], $controllerPath)
+                sprintf('The class %s was not found in the file %s', $scope['controller'], $strController)
             );
         }
 
-        if (!method_exists($scope['controller'], $scope['action'])) {
+        if (!method_exists($strController, $method)) {
             throw new \Exception(
-                sprintf('The method %s was not found in the class %s', $scope['action'], $scope['controller'])
+                sprintf('The method %s was not found in the class %s', $method, $strController)
             );
         };
 
-        $controller = new $scope['controller']();
-        $controller->$scope['action']();
+        $controller->$method();
     }
 
-    private function checkPhpVersion()
-    {
-        $phpVersion = (int)str_replace('.', '', substr(PHP_VERSION, 0, 3));
-        if ($phpVersion < parent::JOROOT_SUPORT_PHP_VERSION) {
-            throw new \Exception('Support only, for versions, equal to or greater than 5.6.0.');
-        }
-    }
-
+    /**
+     * Run all features
+     */
     public function run()
     {
         try {
-            $this->checkPhpVersion();
             ob_start();
             session_start();
 
@@ -183,12 +177,13 @@ class Bootstrap extends Container
                 date_default_timezone_set($this->url['timezone']);
             }
 
-            $scope = $this->scope();
-            $controllerPath = $this->controllerPath($scope['controller']);
-            require "{$controllerPath}";
-            parent::add($scope);
-            $this->dispatch($scope, $controllerPath);
+            if ($this->phpVersion() < parent::JOROOT_SUPORT_PHP_VERSION) {
+                throw new \Exception('Support only, for versions, equal to or greater than 5.6.0.');
+            }
 
+            $scope = $this->scope();
+            parent::add($scope);
+            $this->dispatch($scope);
             ob_end_flush();
         } catch (\Exception $e) {
             parent::error($e->getMessage());

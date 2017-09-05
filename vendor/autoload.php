@@ -50,7 +50,7 @@ function autoload($using)
 
         require_once "{$file}";
     } catch (Exception $e) {
-        echo $e->getMessage();
+        \Joroot\Components\Container::error($e->getMessage());
     }
 }
 
