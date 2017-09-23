@@ -3,6 +3,11 @@
 return [
 
     /**
+     * Force the domain
+     */
+    //'domain' => 'http://my-site.com.br',
+
+    /**
      * Project root directory
      */
     'projectPath' => '/joroot-2/',

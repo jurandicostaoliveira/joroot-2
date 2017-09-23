@@ -23,6 +23,10 @@ class Bootstrap extends Container
      */
     public function __construct()
     {
+        if ($this->phpVersion() < parent::JOROOT_SUPORT_PHP_VERSION) {
+            parent::error('Support only, for versions, equal to or greater than 5.6.0.');
+        }
+
         $this->url = explode('/', filter_input(INPUT_GET, 'url'));
         $this->config = parent::getConfig();
     }
@@ -32,6 +36,10 @@ class Bootstrap extends Container
      */
     private function domain()
     {
+        if (isset($this->config['domain'])) {
+            return $this->config['domain'];
+        }
+
         $protocol = filter_input(INPUT_SERVER, 'HTTPS') ? 'https' : 'http';
         return sprintf('%s://%s', $protocol, filter_input(INPUT_SERVER, 'HTTP_HOST'));
     }
@@ -172,13 +180,8 @@ class Bootstrap extends Container
         try {
             ob_start();
             session_start();
-
-            if (isset($this->url['timezone']) && $this->url['timezone']) {
-                date_default_timezone_set($this->url['timezone']);
-            }
-
-            if ($this->phpVersion() < parent::JOROOT_SUPORT_PHP_VERSION) {
-                throw new \Exception('Support only, for versions, equal to or greater than 5.6.0.');
+            if (isset($this->config['timezone']) && $this->config['timezone']) {
+                date_default_timezone_set($this->config['timezone']);
             }
 
             $scope = $this->scope();
