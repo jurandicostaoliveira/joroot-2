@@ -9,31 +9,6 @@ namespace Joroot\Components;
 class View
 {
 
-    private $directory;
-
-    /**
-     * @param $directory
-     * @return $this
-     */
-    public function inDirectory($directory)
-    {
-        $this->directory = $directory;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    protected function directory()
-    {
-        $dir = BASE_PATH . $this->directory;
-        if ($this->directory && is_dir($dir)) {
-            return $dir;
-        }
-
-        return sprintf('%sapp/views/', BASE_PATH);
-    }
-
     /**
      * @param string $template
      * @param array $data
@@ -41,15 +16,29 @@ class View
     public function render($template, array $data = [])
     {
         try {
-            $filename = $this->directory() . $template;
+            $filename = sprintf('%sapp/views/%s', BASE_PATH, $template);
             if (!file_exists($filename)) {
                 throw new \Exception(sprintf('File %s was not found.', $filename));
             }
 
-            printStop($this->getPath() . $template);
-
+            $scope = array_merge($data, Container::getScope());
+            extract($scope);
+            require_once "{$filename}";
         } catch (\Exception $e) {
             Container::error($e->getMessage());
         }
     }
+
+    /**
+     * @param array $data
+     */
+    public function json($data)
+    {
+        if (!is_array($data) || !is_object($data)) {
+            $data = (array)$data;
+        }
+
+        echo json_encode($data);
+    }
+
 }

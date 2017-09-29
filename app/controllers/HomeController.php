@@ -14,12 +14,14 @@ class HomeController extends Controller
 
     public function index()
     {
-        $this->view
-            ->inDirectory('public/css/')
-            ->render('index.phtml', ['1' => 'teste']);
+        if($this->request->isGet()){
+            echo 'GET';
+        }
 
-        echo '<pre>';
-        printStop(Container::getAll());
+        $this->view->render('index.phtml', ['1' => 'teste', 'host' => 'lala']);
+
+        //echo '<pre>';
+        //printStop(Container::getAll());
     }
 
     public function createAll()

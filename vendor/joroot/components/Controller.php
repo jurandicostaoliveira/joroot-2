@@ -12,6 +12,8 @@ abstract class Controller
 
     protected $response;
 
+    protected $redirect;
+
     protected $view;
 
     /**
@@ -19,6 +21,8 @@ abstract class Controller
      */
     public function __construct()
     {
+        $this->request = new Request();
+        $this->redirect = new Redirect();
         $this->view = new View();
     }
 }
