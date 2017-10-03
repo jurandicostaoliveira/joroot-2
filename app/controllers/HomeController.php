@@ -14,9 +14,8 @@ class HomeController extends Controller
 
     public function index()
     {
-        if($this->request->isGet()){
-            echo 'GET';
-        }
+
+        print_r($this->request->getAction());
 
         $this->view->render('index.phtml', ['1' => 'teste', 'host' => 'lala']);
 
