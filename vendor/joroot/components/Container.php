@@ -73,11 +73,16 @@ class Container
     public static function error($message = null)
     {
         $config = self::getConfig();
+        $file = sprintf('%sjoroot%sviews%serror.phtml', VENDOR_PATH, DS, DS);
+
+        if (isset($config['customErrorPage']) && $config['customErrorPage']) {
+            $file = sprintf('%s%s', BASE_PATH, $config['customErrorPage']);
+        }
+
         if (isset($config['customErrorMessage']) && $config['customErrorMessage']) {
             $message = $config['customErrorMessage'];
         }
 
-        $file = sprintf('%sjoroot%sviews%serror.phtml', VENDOR_PATH, DS, DS);
         die(require "{$file}");
     }
 }

@@ -76,7 +76,7 @@ class Bootstrap extends Container
             throw new \Exception('Project path has not been configured');
         }
 
-        return sprintf('%s%s', $this->domain(), $this->config['projectPath']);
+        return sprintf('%s%s', $this->domain(), trim($this->config['projectPath']));
     }
 
     /**
@@ -84,8 +84,8 @@ class Bootstrap extends Container
      */
     private function controllerRoute()
     {
-        $defaultRoute = (isset($this->config['defaultRoute'])) ? $this->config['defaultRoute'] : null;
-        return (isset($this->url[0]) && $this->url[0]) ? $this->url[0] : $defaultRoute;
+        $defaultRoute = (isset($this->config['defaultRoute'])) ? trim($this->config['defaultRoute']) : null;
+        return (isset($this->url[0]) && $this->url[0]) ? trim($this->url[0]) : $defaultRoute;
     }
 
     /**
@@ -93,7 +93,7 @@ class Bootstrap extends Container
      */
     private function actionRoute()
     {
-        return (isset($this->url[1]) && $this->url[1]) ? $this->url[1] : 'index';
+        return (isset($this->url[1]) && $this->url[1]) ? trim($this->url[1]) : 'index';
     }
 
     /**

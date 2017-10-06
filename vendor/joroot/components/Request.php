@@ -10,27 +10,55 @@ class Request
 {
 
     /**
+     * var string
+     */
+    const REST_ERROR_METHOD = 'Enter the hidden input with the name _method and choose a method: %s.';
+
+    /**
+     * @var array
+     */
+    private $methods = [
+        'POST',
+        'GET',
+        'PUT',
+        'PATCH',
+        'DELETE'
+    ];
+
+    /**
+     * @var string
+     */
+    private $method = 'GET';
+
+    /**
+     * Request constructor.
+     */
+    public function __construct()
+    {
+        if (!$this->isRest()) {
+            Container::error(sprintf(self::REST_ERROR_METHOD, implode(', ', $this->methods)));
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRest()
+    {
+        $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->method = strtoupper(filter_input(INPUT_POST, '_method'));
+            return in_array($this->method, $this->methods);
+        }
+        return true;
+    }
+
+    /**
      * @return string
      */
     public function getMethod()
     {
-        return strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD'));
-    }
-
-    /**
-     * @return bool
-     */
-    public function isGet()
-    {
-        return ($this->getMethod() === 'GET');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isPost()
-    {
-        return ($this->getMethod() === 'POST');
+        return $this->method;
     }
 
     /**

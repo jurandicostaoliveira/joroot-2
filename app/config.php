@@ -23,10 +23,17 @@ return [
     'timezone' => 'America/Sao_Paulo',
 
     /**
+     * Customize error page
+     * Example : app/views/error.phtml
+     */
+    'customErrorPage' => null,
+
+    /**
      * Customize error message
      * Example : Do not panic, it may just be a route error, check the URL entered.
      */
     'customErrorMessage' => null,
+
 
     /**
      * Configuring the pdo driver for database
